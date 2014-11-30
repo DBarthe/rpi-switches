@@ -6,19 +6,23 @@ CXX ?= clang++
 TARGET = rpi-switches
 
 # sources
-SRCDIRS = src
-SRC = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.cpp))
+COMMON_SRCDIRS = src
+COMMON_SRC = $(foreach dir,$(COMMON_SRCDIRS),$(wildcard $(dir)/*.cpp))
+RPI_SRCDIR = src/rpi
+RPI_SRC = $(wildcard $(RPI_SRCDIR)/*.cpp)
+DESKTOP_SRCDIR = src/desktop
+DESKTOP_SRC = $(wildcard $(DESKTOP_SRCDIR)/*.cpp)
 
 # includes
-INCDIRS = src/
+INCDIRS = $(COMMON_SRCDIRS)
 INCFLAGS = $(foreach dir,$(INCDIRS),-I $(dir))
 
 # libs (TODO)
 # desktop version to allow testing on desktop.
-DESKTOP_GPIO_LIB =  # ...
-RPI_GPIO_LIB = # ...
-LIBDIRS =  # ...
-LIBS = $(foreach dir,$(LIBDIRS),-L $(dir)) # ...
+DESKTOP_GPIO_LIB =
+RPI_GPIO_LIB =
+LIBDIRS =
+LIBS = $(foreach dir,$(LIBDIRS),-L $(dir))
 
 # debug and optimizations
 DEBUG = yes
@@ -41,20 +45,21 @@ CXXFLAGS = $(INCFLAGS) $(OFLAGS) $(DBGFLAGS)
 
 
 # objects files
-OBJ = $(SRC:.cpp=.o)
+COMMON_OBJ = $(COMMON_SRC:.cpp=.o)
+RPI_OBJ = $(RPI_SRC:.cpp=.o)
+DESKTOP_OBJ = $(DESKTOP_SRC:.cpp=.o)
 
 # default : desktop version
 all:	$(TARGET)-desktop
-	echo "hello world !"
 
-$(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJ) $(LIBS) $(RPI-GPIO-LIB)
+$(TARGET): $(COMMON_OBJ) $(RPI_OBJ)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(COMMON_OBJ) $(RPI_OBJ) $(LIBS) $(RPI_GPIO_LIB)
 	
-$(TARGET)-desktop: $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $(TARGET)-desktop $(OBJ) $(LIBS)
+$(TARGET)-desktop: $(COMMON_OBJ) $(DESKTOP_OBJ)
+	$(CXX) $(CXXFLAGS) -o $(TARGET)-desktop $(COMMON_OBJ) $(DESKTOP_OBJ) $(LIBS)
 	
 clean:
 	$(RM) $(TARGET) $(TARGET)-desktop
-	$(RM) $(OBJ)
+	$(RM) $(COMMON_OBJ) $(RPI_OBJ) $(DESKTOP_OBJ)
 
 rebuild: clean all
