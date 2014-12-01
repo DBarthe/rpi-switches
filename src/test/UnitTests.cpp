@@ -3,6 +3,7 @@
 
 #include "SimulatedGpio.h"
 #include "GpioWrapper.h"
+#include "Pin.h"
 
 void testSimulatedGpio() {
 
@@ -31,14 +32,29 @@ void testGpioWrapper() {
   std::cout << "Testing GpioWrapper" << std::endl; 
 
   AGpio& gpio = GpioWrapper::unwrap();
-  gpio.init(3);
-  gpio.write(3, true);
+  gpio.init(5);
+  gpio.write(5, true);
   AGpio& gpio2 = GpioWrapper::unwrap();
-  assert(gpio2.read(3) == true);
+  assert(gpio2.read(5) == true);
+
+  gpio.reset();
 }
 
+void testPin() {
+  std::cout << "Testing Pin" << std::endl; 
+
+  Pin pin(1);
+  assert(pin.getNum() == 1);
+  pin.write(true);
+  assert(pin.read() == true);
+  Pin pin2(pin);
+  assert(pin2.read() == true);
+
+  GpioWrapper::unwrap().reset();
+}
 
 int main() {
   testSimulatedGpio();
   testGpioWrapper();
+  testPin();
 }

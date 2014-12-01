@@ -6,13 +6,6 @@
  */
 
 #include "Pin.h"
-
-Pin::Pin(AGpio& gpio) : m_gpio(gpio) {
-}
-
-Pin::Pin(const Pin& orig) : m_gpio(orig.m_gpio) {
-}
-
-Pin::~Pin() {
-}
-
+#include "GpioWrapper.h"
+ 
+AGpio& Pin::s_gpio = GpioWrapper::unwrap();

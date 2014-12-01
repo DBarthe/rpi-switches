@@ -65,6 +65,12 @@ public:
                     << pin_num << std::endl;
       }
     }
+
+    virtual void reset() {
+      for (auto& v : m_pin_board) {
+        v = Uninit;
+      }
+    }
     
 };
 

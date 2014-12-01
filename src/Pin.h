@@ -11,18 +11,29 @@
 #include "AGpio.h"
 
 class Pin {
-public:
-    Pin(AGpio& gpio);
-    Pin(const Pin& orig);
-    virtual ~Pin();
 
-    bool read() const;
-    void write(bool value);
-    int getNum() const;
-    
-private:
-    AGpio& m_gpio;
-    int m_num;
+  static AGpio& s_gpio;
+  int m_num;
+
+public:
+  Pin(int num) : m_num(num) {
+    s_gpio.init(num);
+  }
+
+  Pin(const Pin& orig) : m_num(orig.m_num) {}
+  virtual ~Pin() {}
+
+  bool read() const {
+    return s_gpio.read(m_num);
+  }
+
+  void write(bool value) {
+    s_gpio.write(m_num, value);
+  }
+
+  int getNum() const {
+    return m_num;
+  }
 };
 
 #endif	/* PIN_H */
