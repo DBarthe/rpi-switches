@@ -6,13 +6,3 @@
  */
 
 #include "SimulatedGpio.h"
-
-SimulatedGpio::SimulatedGpio() {
-}
-
-SimulatedGpio::SimulatedGpio(const SimulatedGpio& orig) {
-}
-
-SimulatedGpio::~SimulatedGpio() {
-}
-

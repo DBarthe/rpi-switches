@@ -7,10 +7,10 @@
 
 #include "Pin.h"
 
-Pin::Pin() {
+Pin::Pin(AGpio& gpio) : m_gpio(gpio) {
 }
 
-Pin::Pin(const Pin& orig) {
+Pin::Pin(const Pin& orig) : m_gpio(orig.m_gpio) {
 }
 
 Pin::~Pin() {

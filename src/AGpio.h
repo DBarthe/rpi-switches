@@ -13,6 +13,11 @@ public:
     AGpio();
     AGpio(const AGpio& orig);
     virtual ~AGpio();
+     
+    virtual void init(int pin_num) = 0;
+    virtual bool read(int pin_num) const = 0;
+    virtual void write(int pin_num, bool value) = 0;
+    
 private:
 
 };
