@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "SimulatedGpio.h"
+#include "GpioWrapper.h"
 
 void testSimulatedGpio() {
 
@@ -26,7 +27,18 @@ void testSimulatedGpio() {
   assert (gpio2.read(6) == false);
 }
 
+void testGpioWrapper() {
+  std::cout << "Testing GpioWrapper" << std::endl; 
+
+  AGpio& gpio = GpioWrapper::unwrap();
+  gpio.init(3);
+  gpio.write(3, true);
+  AGpio& gpio2 = GpioWrapper::unwrap();
+  assert(gpio2.read(3) == true);
+}
+
 
 int main() {
   testSimulatedGpio();
+  testGpioWrapper();
 }
