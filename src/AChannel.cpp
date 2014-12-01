@@ -6,13 +6,3 @@
  */
 
 #include "AChannel.h"
-
-AChannel::AChannel() {
-}
-
-AChannel::AChannel(const AChannel& orig) {
-}
-
-AChannel::~AChannel() {
-}
-

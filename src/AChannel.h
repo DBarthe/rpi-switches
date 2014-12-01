@@ -11,20 +11,22 @@
 #include <string>
 
 class AChannel {
+
+protected:
+    std::string m_name;
+
 public:
-    AChannel();
-    AChannel(const AChannel& orig);
-    virtual ~AChannel();
+    AChannel(std::string const& name) : m_name(name) {}
+    AChannel(const AChannel& orig) : m_name(orig.m_name) {}
+    virtual ~AChannel() {}
     
-    std::string const& getName() const;
+    std::string const& getName() const {
+      return m_name;
+    }
     
     virtual void sync() = 0;
     virtual bool read() const = 0;
-    virtual bool write(bool value) = 0;
-    
-private:
-    std::string m_name;
-    
+    virtual void write(bool value) = 0;
 };
 
 #endif	/* ACHANNEL_H */

@@ -4,6 +4,7 @@
 #include "SimulatedGpio.h"
 #include "GpioWrapper.h"
 #include "Pin.h"
+#include "Channel.h"
 
 void testSimulatedGpio() {
 
@@ -53,8 +54,27 @@ void testPin() {
   GpioWrapper::unwrap().reset();
 }
 
+void testChannel() {
+  std::cout << "Testing Channel" << std::endl; 
+
+  Pin pin(3);
+  pin.write(true);
+  Channel channel("foo", pin);
+  assert (channel.read() == true);
+  channel.write(false);
+  assert (channel.read() == false);
+  assert (pin.read() == false);
+  pin.write(true);
+  assert (channel.read() == false);
+  channel.sync();
+  assert (channel.read() == true);
+
+  GpioWrapper::unwrap().reset();
+}
+
 int main() {
   testSimulatedGpio();
   testGpioWrapper();
   testPin();
+  testChannel();
 }
