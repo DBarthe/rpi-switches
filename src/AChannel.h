@@ -10,23 +10,24 @@
 
 #include <string>
 
-class AChannel {
+#include "IReadable.h"
+#include "IWritable.h"
+
+class AChannel : public IWritable, public IReadable {
 
 protected:
-    std::string m_name;
+  std::string m_name;
 
 public:
-    AChannel(std::string const& name) : m_name(name) {}
-    AChannel(const AChannel& orig) : m_name(orig.m_name) {}
-    virtual ~AChannel() {}
-    
-    std::string const& getName() const {
-      return m_name;
-    }
-    
-    virtual void sync() = 0;
-    virtual bool read() const = 0;
-    virtual void write(bool value) = 0;
+  AChannel(std::string const& name) : m_name(name) {}
+  AChannel(const AChannel& orig) : m_name(orig.m_name) {}
+  virtual ~AChannel() {}
+  
+  std::string const& getName() const {
+    return m_name;
+  }
+  
+  virtual void sync() = 0;
 };
 
 #endif	/* ACHANNEL_H */

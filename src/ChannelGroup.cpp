@@ -6,13 +6,3 @@
  */
 
 #include "ChannelGroup.h"
-
-ChannelGroup::ChannelGroup() {
-}
-
-ChannelGroup::ChannelGroup(const ChannelGroup& orig) {
-}
-
-ChannelGroup::~ChannelGroup() {
-}
-
