@@ -8,11 +8,11 @@
 #ifndef PIN_H
 #define	PIN_H
 
-#include "AGpio.h"
+#include "IGpio.h"
 
 class Pin {
 
-  static AGpio& s_gpio;
+  static IGpio& s_gpio;
   int m_num;
 
 public:

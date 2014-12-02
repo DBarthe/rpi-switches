@@ -16,7 +16,7 @@
 class GpioWrapper
 {
 private:
-  AGpio& m_gpio;
+  IGpio& m_gpio;
 
 #ifdef DESKTOP_MODE
   GpioWrapper() :
@@ -41,7 +41,7 @@ private:
   }
 
 public:
-  static AGpio& unwrap() {
+  static IGpio& unwrap() {
     return getInstance().m_gpio;
   }
 

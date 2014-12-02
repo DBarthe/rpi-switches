@@ -13,9 +13,9 @@
 #include <iostream>
 #include <algorithm>
 
-#include "AGpio.h"
+#include "IGpio.h"
 
-class SimulatedGpio : public AGpio { 
+class SimulatedGpio : public IGpio { 
 
     static const int MAX_PIN_NUM = 26;
     static void assert_range(int pin_num) {
@@ -27,12 +27,12 @@ class SimulatedGpio : public AGpio {
 
 public:
     SimulatedGpio() :
-      AGpio(),
+      IGpio(),
       m_pin_board({Uninit})
     {}
 
     SimulatedGpio(const SimulatedGpio& orig) :
-      AGpio(),
+      IGpio(),
       m_pin_board()
     {
       std::copy(orig.m_pin_board.begin(), orig.m_pin_board.end(), m_pin_board.begin());

@@ -26,8 +26,6 @@ public:
   std::string const& getName() const {
     return m_name;
   }
-  
-  virtual void sync() = 0;
 };
 
 #endif	/* ACHANNEL_H */

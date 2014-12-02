@@ -33,10 +33,10 @@ void testSimulatedGpio() {
 void testGpioWrapper() {
   std::cout << "Testing GpioWrapper" << std::endl; 
 
-  AGpio& gpio = GpioWrapper::unwrap();
+  IGpio& gpio = GpioWrapper::unwrap();
   gpio.init(5);
   gpio.write(5, true);
-  AGpio& gpio2 = GpioWrapper::unwrap();
+  IGpio& gpio2 = GpioWrapper::unwrap();
   assert(gpio2.read(5) == true);
 
   gpio.reset();

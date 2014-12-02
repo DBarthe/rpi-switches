@@ -8,4 +8,4 @@
 #include "Pin.h"
 #include "GpioWrapper.h"
  
-AGpio& Pin::s_gpio = GpioWrapper::unwrap();
+IGpio& Pin::s_gpio = GpioWrapper::unwrap();
