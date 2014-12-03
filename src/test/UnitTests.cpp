@@ -7,7 +7,7 @@
 #include "Channel.h"
 #include "ChannelGroup.h"
 #include "ChannelController.h"
-#include "Task.h"
+#include "TaskTurn.h"
 
 void testSimulatedGpio() {
 
@@ -207,7 +207,7 @@ void testTask() {
   ChannelController cc;
   cc.add(*new Channel("foo", p));
   cc.write("foo", false);
-  auto t = Task<true>("foo");
+  auto t = TaskTurn<true>("foo");
   t.execute(cc);
   assert(cc.read("foo") == true);
 

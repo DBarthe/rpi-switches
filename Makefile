@@ -9,14 +9,15 @@ TARGET_TEST_DESKTOP = test-desktop
 
 # sources
 MAIN_SRCDIR = src/main
-MAIN_SRC = $(wildcard $(MAIN_SRCDIR)/*.cpp)
-COMMON_SRCDIRS = src src/gpio src/channel
-COMMON_SRC = $(foreach dir,$(COMMON_SRCDIRS),$(wildcard $(dir)/*.cpp))
+COMMON_SRCDIRS = src src/gpio src/channel src/task src/chooser
 RPI_SRCDIR = src/gpio/rpi
-RPI_SRC = $(wildcard $(RPI_SRCDIR)/*.cpp)
 DESKTOP_SRCDIR = src/gpio/desktop
-DESKTOP_SRC = $(wildcard $(DESKTOP_SRCDIR)/*.cpp)
 TEST_SRCDIR = src/test
+
+MAIN_SRC = $(wildcard $(MAIN_SRCDIR)/*.cpp)
+COMMON_SRC = $(foreach dir,$(COMMON_SRCDIRS),$(wildcard $(dir)/*.cpp))
+RPI_SRC = $(wildcard $(RPI_SRCDIR)/*.cpp)
+DESKTOP_SRC = $(wildcard $(DESKTOP_SRCDIR)/*.cpp)
 TEST_SRC = $(wildcard $(TEST_SRCDIR)/*.cpp)
 
 # includes
