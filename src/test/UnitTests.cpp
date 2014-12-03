@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <list>
 
 #include "SimulatedGpio.h"
 #include "GpioWrapper.h"
@@ -9,6 +10,12 @@
 #include "ChannelController.h"
 #include "TaskTurn.h"
 #include "TaskInverse.h"
+#include "IChooser.h"
+#include "Turn.h"
+#include "Inverse.h"
+#include "ChooserDecoratorMaybe.h"
+
+
 
 void testSimulatedGpio() {
 
@@ -204,6 +211,8 @@ void testChannelController() {
 }
 
 void testTask() {
+  std::cout << "Testing Task" << std::endl; 
+
   Pin p(1);
   ChannelController cc;
   cc.add(*new Channel("foo", p));
@@ -220,6 +229,60 @@ void testTask() {
   GpioWrapper::unwrap().reset();
 }
 
+
+static void
+consumeTaskList(std::list<ATask*>& list, ChannelController &cc) {
+  for (auto t : list) {
+    t->execute(cc);
+    delete t;
+  }
+  delete &list;
+}
+
+void testChooser() {
+  std::cout << "Testing Chooser" << std::endl; 
+
+  ChannelController cc;
+  Pin p(1);
+  cc.add(*new Channel("foo", p));
+  cc.write("foo", true);
+
+  IChooser& turnOn = *new TurnOn;
+  IChooser& turnOff = *new TurnOff;
+  IChooser& inverse = *new Inverse;
+  IChooser& ifOnOff = *new ChooserDecoratorIfOn(*new TurnOff, cc);
+  IChooser& ifOffInverse = *new ChooserDecoratorIfOff(*new Inverse, cc);
+
+  consumeTaskList(turnOff.consult("foo"), cc);
+  assert(cc.read("foo") == false);
+
+  consumeTaskList(turnOn.consult("foo"), cc);
+  assert(cc.read("foo") == true);
+
+  consumeTaskList(inverse.consult("foo"), cc);
+  assert(cc.read("foo") == false);
+  consumeTaskList(inverse.consult("foo"), cc);
+  assert(cc.read("foo") == true);
+
+  consumeTaskList(ifOnOff.consult("foo"), cc);
+  assert(cc.read("foo") == false);
+  consumeTaskList(ifOnOff.consult("foo"), cc);
+  assert(cc.read("foo") == false);
+
+  consumeTaskList(ifOffInverse.consult("foo"), cc);
+  assert(cc.read("foo") == true);
+  consumeTaskList(ifOffInverse.consult("foo"), cc);
+  assert(cc.read("foo") == true);
+
+  delete &turnOn;
+  delete &turnOff;
+  delete &inverse;
+  delete &ifOnOff;
+  delete &ifOffInverse;
+
+  GpioWrapper::unwrap().reset();
+}
+
 int main() {
   testSimulatedGpio();
   testGpioWrapper();
@@ -228,4 +291,5 @@ int main() {
   testChannelGroup();
   testChannelController();
   testTask();
+  testChooser();
 }
