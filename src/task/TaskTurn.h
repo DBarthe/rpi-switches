@@ -2,7 +2,6 @@
 #define TASKTURN_H_
 
 #include "ATask.h"
-#include "ChannelController.h"
 
 template <bool VALUE>
 class TaskTurn : public ATask {

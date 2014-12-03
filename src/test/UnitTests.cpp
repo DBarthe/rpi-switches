@@ -8,6 +8,7 @@
 #include "ChannelGroup.h"
 #include "ChannelController.h"
 #include "TaskTurn.h"
+#include "TaskInverse.h"
 
 void testSimulatedGpio() {
 
@@ -209,6 +210,11 @@ void testTask() {
   cc.write("foo", false);
   auto t = TaskTurn<true>("foo");
   t.execute(cc);
+  assert(cc.read("foo") == true);
+  auto t2 = TaskInverse("foo");
+  t2.execute(cc);
+  assert(cc.read("foo") == false);
+  t2.execute(cc);
   assert(cc.read("foo") == true);
 
   GpioWrapper::unwrap().reset();
