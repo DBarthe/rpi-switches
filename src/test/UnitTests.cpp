@@ -6,6 +6,8 @@
 #include "Pin.h"
 #include "Channel.h"
 #include "ChannelGroup.h"
+#include "ChannelController.h"
+#include "Task.h"
 
 void testSimulatedGpio() {
 
@@ -126,10 +128,98 @@ void testChannelGroup() {
   GpioWrapper::unwrap().reset();
 }
 
+void testChannelController() {
+  std::cout << "Testing ChannelController" << std::endl; 
+
+
+  ChannelController cc;
+
+  Pin pins[6] = {
+    Pin(0), Pin(1), Pin(2),
+    Pin(3), Pin(4), Pin(5)
+  };
+
+  // add
+  Channel* chans[6] = {nullptr};
+  for (int i = 0; i < 6; i++) {
+    chans[i] = new Channel("ch"+std::to_string(i), pins[i]);
+    cc.add(*chans[i]);
+  }
+
+  // write and read
+  for (auto chan : chans) {
+    cc.write(chan->getName(), true);
+    assert(chan->read() == true);
+    assert(cc.read(chan->getName()) == true);
+    chan->write(false);
+    assert(cc.read(chan->getName()) == false);
+  }
+
+  // sync
+  pins[0].write(true);
+  assert(cc.read(chans[0]->getName()) == false);
+  cc.sync(chans[0]->getName());
+  assert(cc.read(chans[0]->getName()) == true);
+
+  // writeAll
+  cc.writeAll(true);
+  for (auto chan : chans) {
+    assert(chan->read() == true);
+  }
+
+  // syncAll
+  for (auto& p : pins) {
+    p.write(false);
+  }
+  for (auto chan : chans) {
+    assert(chan->read() == true);
+  }
+  cc.syncAll();
+  for (auto chan : chans) {
+    assert(chan->read() == false);
+  }
+
+  // readAll
+  auto& map = cc.readAll();
+  for (auto& pair : map) {
+    assert (cc.read(pair.first) == pair.second);
+  }
+  delete &map;
+
+
+  // remove
+  std::string savedName = chans[0]->getName();
+  cc.remove(savedName);
+  cc.writeAll(true);
+  assert(pins[0].read() == false);
+  try {
+    (void)cc.write(savedName, true);
+    assert(false);
+  } catch (std::exception _) {
+    assert(true);
+  }
+
+  GpioWrapper::unwrap().reset();
+}
+
+void testTask() {
+  Pin p(1);
+  ChannelController cc;
+  cc.add(*new Channel("foo", p));
+  cc.write("foo", false);
+  auto t = Task<true>("foo");
+  t.execute(cc);
+  assert(cc.read("foo") == true);
+
+  GpioWrapper::unwrap().reset();
+}
+
 int main() {
   testSimulatedGpio();
   testGpioWrapper();
   testPin();
   testChannel();
   testChannelGroup();
+  testChannelController();
+  testTask();
 }

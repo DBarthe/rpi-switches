@@ -15,8 +15,14 @@ class ChannelController {
 public:
   ChannelController() : _map() {}
 
+  ~ChannelController() {
+    for (auto &pair : _map) {
+      delete pair.second;
+    }
+  }
+
   void add(AChannel& channel) {
-    if (_map.find(channel.getName()) != _map.end()) {
+    if (_map.find(channel.getName()) == _map.end()) {
       _map[channel.getName()] = &channel;
     } else {
       // TODO: throw custom exception
