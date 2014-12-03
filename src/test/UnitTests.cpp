@@ -14,8 +14,9 @@
 #include "Turn.h"
 #include "Inverse.h"
 #include "ChooserDecoratorMaybe.h"
-
-
+#include "IProfile.h"
+#include "InnerProfile.h"
+#include "BifaceProfile.h"
 
 void testSimulatedGpio() {
 
@@ -283,6 +284,37 @@ void testChooser() {
   GpioWrapper::unwrap().reset();
 }
 
+void testProfile() {
+  std::cout << "Testing Profile" << std::endl; 
+
+  ChannelController cc;
+  Pin p(1);
+  cc.add(*new Channel("foo", p));
+
+  IProfile& inner = *new InnerProfile(*new TurnOn);
+  IProfile& biface = *new BifaceProfile(*new TurnOn, *new TurnOff);
+
+  cc.write("foo", false);
+  consumeTaskList(inner.outerConsult("foo"), cc);
+  assert(cc.read("foo") == false);
+  consumeTaskList(inner.innerConsult("foo"), cc);
+  assert(cc.read("foo") == true);
+
+  cc.write("foo", false);
+  consumeTaskList(biface.outerConsult("foo"), cc);
+  assert(cc.read("foo") == false);
+  consumeTaskList(biface.innerConsult("foo"), cc);
+  assert(cc.read("foo") == true);
+  consumeTaskList(biface.outerConsult("foo"), cc);
+  assert(cc.read("foo") == false);
+
+  delete &inner;
+  delete &biface;
+
+  GpioWrapper::unwrap().reset();
+}
+
+
 int main() {
   testSimulatedGpio();
   testGpioWrapper();
@@ -292,4 +324,5 @@ int main() {
   testChannelController();
   testTask();
   testChooser();
+  testProfile();
 }
