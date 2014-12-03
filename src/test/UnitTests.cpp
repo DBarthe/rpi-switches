@@ -17,6 +17,12 @@
 #include "IProfile.h"
 #include "InnerProfile.h"
 #include "BifaceProfile.h"
+#include "IMaster.h"
+#include "AMaster.h"
+#include "Master.h"
+#include "MasterMulti.h"
+#include "MasterComposite.h"
+
 
 void testSimulatedGpio() {
 
@@ -141,19 +147,22 @@ void testChannelController() {
   std::cout << "Testing ChannelController" << std::endl; 
 
 
-  ChannelController cc;
 
   Pin pins[6] = {
     Pin(0), Pin(1), Pin(2),
     Pin(3), Pin(4), Pin(5)
   };
 
-  // add
   Channel* chans[6] = {nullptr};
   for (int i = 0; i < 6; i++) {
     chans[i] = new Channel("ch"+std::to_string(i), pins[i]);
-    cc.add(*chans[i]);
   }
+
+  // initializer_list and add
+  ChannelController cc = {
+    chans[0], chans[1], chans[2],
+    chans[3], chans[4], chans[5]
+  };
 
   // write and read
   for (auto chan : chans) {
@@ -314,6 +323,64 @@ void testProfile() {
   GpioWrapper::unwrap().reset();
 }
 
+void testMaster() {
+  std::cout << "Testing Master" << std::endl; 
+
+  Pin p1(1), p2(2), p3(3), p4(4);
+  ChannelController cc = {
+    new Channel("foo", p1),
+    new Channel("bar", p2),
+    new Channel("tom", p3),
+    new Channel("jerry", p4),
+  };
+
+  IMaster& master =
+    *new Master(*new InnerProfile(*new Inverse), "foo");
+  cc.writeAll(false);
+  consumeTaskList(master.innerConsult(), cc);
+  assert(cc.read("foo") == true);
+  consumeTaskList(master.outerConsult(), cc);
+  assert(cc.read("foo") == true);
+
+  IMaster& masterMulti =
+    *new MasterMulti(*new InnerProfile(*new Inverse),
+      { "foo", "bar", "jerry" });
+  cc.writeAll(false);
+  consumeTaskList(masterMulti.innerConsult(), cc);
+  assert(cc.read("foo") == true);
+  assert(cc.read("bar") == true);
+  assert(cc.read("tom") == false);
+  assert(cc.read("jerry") == true);
+  consumeTaskList(masterMulti.outerConsult(), cc);
+  assert(cc.read("foo") == true);
+  assert(cc.read("bar") == true);
+  assert(cc.read("tom") == false);
+  assert(cc.read("jerry") == true);
+
+  auto& masterComposite = *new MasterComposite {
+    new Master(*new InnerProfile(*new Inverse), "foo"),
+    new Master(*new BifaceProfile(*new Inverse, *new TurnOff), "bar"),
+    new MasterMulti(*new InnerProfile(*new TurnOn), {"tom", "jerry"})
+  };
+  cc.writeAll(false);
+  consumeTaskList(masterComposite.innerConsult(), cc);
+  assert(cc.read("foo") == true);
+  assert(cc.read("bar") == true);
+  assert(cc.read("tom") == true);
+  assert(cc.read("jerry") == true);
+  consumeTaskList(masterComposite.outerConsult(), cc);
+  assert(cc.read("foo") == true);
+  assert(cc.read("bar") == false);
+  assert(cc.read("tom") == true);
+  assert(cc.read("jerry") == true);
+
+  delete &master;
+  delete &masterMulti;
+  delete &masterComposite;
+
+  GpioWrapper::unwrap().reset();
+}
+
 
 int main() {
   testSimulatedGpio();
@@ -325,4 +392,7 @@ int main() {
   testTask();
   testChooser();
   testProfile();
+  testMaster();
+
+  return 0;
 }

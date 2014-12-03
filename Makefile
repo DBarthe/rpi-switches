@@ -9,7 +9,7 @@ TARGET_TEST_DESKTOP = test-desktop
 
 # sources
 MAIN_SRCDIR = src/main
-COMMON_SRCDIRS = src src/gpio src/channel src/task src/chooser src/profile
+COMMON_SRCDIRS = src src/gpio src/channel src/task src/chooser src/profile src/master
 RPI_SRCDIR = src/gpio/rpi
 DESKTOP_SRCDIR = src/gpio/desktop
 TEST_SRCDIR = src/test
