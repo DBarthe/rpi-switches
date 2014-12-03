@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <initializer_list>
 
 #include "AChannel.h"
 
@@ -13,7 +14,13 @@ class ChannelController {
   std::map<std::string, AChannel*> _map;
 
 public:
-  ChannelController() : _map() {}
+  ChannelController() = default;
+  ChannelController(std::initializer_list<AChannel*> list)
+  : _map() {
+    for (auto chan : list) {
+      add(*chan);
+    }
+  }
 
   ~ChannelController() {
     for (auto &pair : _map) {
